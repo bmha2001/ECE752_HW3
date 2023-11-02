@@ -22,13 +22,13 @@ memory = SingleChannelDDR3_1600("1GiB")
 processor = SimpleProcessor(isa=ISA.X86,cpu_type=CPUTypes.O3, num_cores=1)
 
 # flag for fuzzing the TSC
-processor.cores[0].core.isa[0].fuzz_TSC=False
+processor.cores[0].core.isa[0].fuzz_TSC=True
 
 # flag for delaying control-speculative loads
-processor.cores[0].core.delayCtrlSpecLoad=False
+#processor.cores[0].core.delayCtrlSpecLoad=False
 
 # flag for delaying tainted load
-processor.cores[0].core.delayTaintedLoad=False
+#processor.cores[0].core.delayTaintedLoad=False
 
 #processor.cores[0].core.max_insts_any_thread=250000000
 
@@ -40,7 +40,7 @@ board = SimpleBoard(
     cache_hierarchy=cache_hierarchy,
     )
 
-binary = CustomResource("../spectre/spectre.gcc");
+binary = CustomResource("../spectre.gcc");
 board.set_se_binary_workload(binary)
 
 #board.set_se_binary_workload(
