@@ -151,7 +151,7 @@ RegClass matRegClass(MatRegClass, MatRegClassName, 1, debug::MatRegs);
 
 } // anonymous namespace
 
-ISA::ISA(const X86ISAParams &p) : BaseISA(p), vendorString(p.vendor_string), fuzz_TSC(p.fuzz_TSC)
+ISA::ISA(const X86ISAParams &p) : BaseISA(p), fuzzTSC(p.fuzz_TSC), vendorString(p.vendor_string)
 {
     fatal_if(vendorString.size() != 12,
              "CPUID vendor string must be 12 characters\n");
@@ -220,11 +220,10 @@ ISA::readMiscReg(RegIndex idx)
 {
     if (idx == misc_reg::Tsc) {
         uint64_t tsc_value =  regVal[misc_reg::Tsc] + tc->getCpuPtr()->curCycle();
-        if(fuzz_TSC) {
-            uint64_t remainder = tsc_value % 16;
+        if(fuzzTSC) {
 
             // Round down the TSC to the nearest multiple of the rounding factor
-            uint64_t roundedTSC = currentTSC - remainder;
+            uint64_t roundedTSC = currentTSC * 1000;
             return roundedTSC;
         } else {
             return tsc_value;
