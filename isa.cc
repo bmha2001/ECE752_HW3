@@ -223,7 +223,7 @@ ISA::readMiscReg(RegIndex idx)
         if(fuzzTSC) {
 
             // Round down the TSC to the nearest multiple of the rounding factor
-            uint64_t roundedTSC = currentTSC * 1000;
+            uint64_t roundedTSC = tsc_value * 1000;
             return roundedTSC;
         } else {
             return tsc_value;
