@@ -993,7 +993,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     ThreadID tid = completed_inst->threadNumber;
 
     //752 code
-    if (completed_inst->isCondCtrl()) {
+    if (completed_inst->isCondCtrl() && !completed_inst->isSquashedInIQ()) {
 	    memDepUnit[tid].resolveBr(completed_inst);
     }
 
@@ -1210,7 +1210,7 @@ InstructionQueue::doSquash(ThreadID tid)
         DynInstPtr squashed_inst = (*squash_it);
 //752 code
     if (squashed_inst->isCondCtrl()) {
-	memDepUnit[tid].removeBr(squashed_inst);
+	    memDepUnit[tid].removeBr(squashed_inst);
     }
 	
 

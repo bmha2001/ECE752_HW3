@@ -195,29 +195,33 @@ MemDepUnit::insertBarrierSN(const DynInstPtr &barr_inst)
 //752 code
 void MemDepUnit::insertBr(const DynInstPtr &inst)
 {
+
 	branchColors.insert(inst->seqNum);
 }
 
 void MemDepUnit::removeBr(const DynInstPtr &inst)
 {
 	// assumption is dependent instruction that weren't woken up due moveToReady mods are also squashed
+    std::cout << "branch no. " << inst->seqNum << "squashed\n";
 	branchColors.erase(inst->seqNum);
 }
 
 void MemDepUnit::resolveBr(const DynInstPtr &inst)
 {
+    if(!inst->isSquashed()) {
 	//assumption moveToReady is good enough to wakeup we don't need to worry about data dependencies
 	removeBr(inst);
-
+    std::cout << "resolved branch " << inst->seqNum << "\n";
 	auto lowestbranch = branchColors.begin();
 	if(delayCtrlSpecLoad) {
-
+    std::cout << "next branch " << *lowestbranch << "\n";
 	for(ThreadID tid =0 ; tid < MaxThreads ; tid++) {
         ListIt inst_list_it = instList[tid].begin();
 
         while (inst_list_it != instList[tid].end()) {
 
             if ((*inst_list_it)->seqNum < *lowestbranch && (*inst_list_it)->getWaitOnBrRes()) {
+                std::cout << "delayed load reissued load num: " << (*inst_list_it)->seqNum << "\n";
 		    (*inst_list_it)->clearWaitOnBrRes();
 		    MemDepEntryPtr loadafterbr = findInHash(*inst_list_it);
 		   moveToReady(loadafterbr);
@@ -225,6 +229,7 @@ void MemDepUnit::resolveBr(const DynInstPtr &inst)
 	 
             inst_list_it++;
         }
+    }
 	}
 	}
 
@@ -585,10 +590,10 @@ MemDepUnit::squash(const InstSeqNum &squashed_num, ThreadID tid)
 
     while (!instList[tid].empty() &&
            (*squash_it)->seqNum > squashed_num) {
-
+            std::cout << "load no. " << (*squash_it)->seqNum << "squashed\n";
         DPRINTF(MemDepUnit, "Squashing inst [sn:%lli]\n",
                 (*squash_it)->seqNum);
-
+        
         loadBarrierSNs.erase((*squash_it)->seqNum);
 
         storeBarrierSNs.erase((*squash_it)->seqNum);
@@ -651,6 +656,7 @@ MemDepUnit::moveToReady(MemDepEntryPtr &woken_inst_entry)
 	if (delayCtrlSpecLoad && !branchColors.empty() && ((*branchColors.begin()) < woken_inst_entry->inst->seqNum) ) {
 	//auto lowestbranch = branchColors.begin();
 	//if (!branchColors.empty() && ( *lowestbranch < woken_inst_entry->inst->seqNum) ) {
+        std::cout << "load delayed load num: " << woken_inst_entry->inst->seqNum << " \n";
 		woken_inst_entry->inst->setWaitOnBrRes();
 		return;
 	} else {
