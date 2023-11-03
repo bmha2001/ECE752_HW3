@@ -382,9 +382,9 @@ class DynInst : public ExecContext, public RefCounted
     bool notAnInst() const { return instFlags[NotAnInst]; }
     void setNotAnInst() { instFlags[NotAnInst] = true; }
 
-    void setTainted() {instFlags[Tainted] = true}
-    void clearTainted() {instFlags[Tainted] = false}
-    bool isTainted()  {return instFlags[Tainted]}
+    void setTainted() {instFlags[Tainted] = true;}
+    void clearTainted() {instFlags[Tainted] = false;}
+    bool isTainted()  {return instFlags[Tainted];}
 
 
     ////////////////////////////////////////////
