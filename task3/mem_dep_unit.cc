@@ -648,7 +648,7 @@ void
 MemDepUnit::moveToReady(MemDepEntryPtr &woken_inst_entry)
 {
     //752 code
-    if(delayTaintedLoad && !woken_inst_entry->isNonSpeculative() && !branchColors.empty()) {
+    if(delayTaintedLoad && !woken_inst_entry->inst->isNonSpeculative() && !branchColors.empty()) {
         if(!woken_inst_entry->inst->isTainted()) {
             DPRINTF(MemDepUnit, "Adding instruction [sn:%lli] "
                 "to the ready list.\n", woken_inst_entry->inst->seqNum);

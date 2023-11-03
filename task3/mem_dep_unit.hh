@@ -106,7 +106,8 @@ class MemDepUnit
     std::string name() const { return _name; }
 
     bool delayTaintedLoad = false;
-
+     bool delayCtrlSpecLoad = false;
+    std::set<uint64_t> branchColors;
     /** Initializes the unit with parameters and a thread id. */
     void init(const BaseO3CPUParams &params, ThreadID tid, CPU *cpu);
 
@@ -124,6 +125,10 @@ class MemDepUnit
 
     /** Inserts a memory instruction. */
     void insert(const DynInstPtr &inst);
+
+    void insertBr(const DynInstPtr &inst);
+    void removeBr(const DynInstPtr &inst);
+    void resolveBr(const DynInstPtr &inst);
 
     /** Inserts a non-speculative memory instruction. */
     void insertNonSpec(const DynInstPtr &inst);

@@ -602,6 +602,12 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
     count[new_inst->threadNumber]++;
 
     assert(freeEntries == (numEntries - countInsts()));
+
+    //752 code
+    if (new_inst->isCondCtrl()) {
+
+	memDepUnit[new_inst->threadNumber].insertBr(new_inst);
+    }
 }
 
 void
@@ -985,6 +991,12 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     // instruction if it is a memory instruction.  Also complete the memory
     // instruction at this point since we know it executed without issues.
     ThreadID tid = completed_inst->threadNumber;
+
+    //752 code
+    if (completed_inst->isCondCtrl()) {
+	    memDepUnit[tid].resolveBr(completed_inst);
+    }
+
     if (completed_inst->isMemRef()) {
         memDepUnit[tid].completeInst(completed_inst);
 
@@ -1043,9 +1055,9 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
             // ready.  However that would mean that the dependency
             // graph entries would need to hold the src_reg_idx.
             dep_inst->markSrcRegReady();
-            if(completed_inst->isTainted()) {dep_inst->setTainted();}
-            addIfReady(dep_inst);
 
+            addIfReady(dep_inst);
+            if(completed_inst->isTainted()) {dep_inst->setTainted();}
             dep_inst = dependGraph.pop(dest_reg->flatIndex());
 
             ++dependents;
@@ -1196,6 +1208,12 @@ InstructionQueue::doSquash(ThreadID tid)
            (*squash_it)->seqNum > squashedSeqNum[tid]) {
 
         DynInstPtr squashed_inst = (*squash_it);
+//752 code
+    if (squashed_inst->isCondCtrl()) {
+	memDepUnit[tid].removeBr(squashed_inst);
+    }
+	
+
         if (squashed_inst->isFloating()) {
             iqIOStats.fpInstQueueWrites++;
         } else if (squashed_inst->isVector()) {

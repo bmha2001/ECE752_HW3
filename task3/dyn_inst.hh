@@ -188,7 +188,8 @@ class DynInst : public ExecContext, public RefCounted
         MemOpDone,
         HtmFromTransaction,
         MaxFlags,
-        Tainted
+        Tainted,
+        WaitOnBrRes
     };
 
   private:
@@ -385,6 +386,21 @@ class DynInst : public ExecContext, public RefCounted
     void setTainted() {instFlags[Tainted] = true;}
     void clearTainted() {instFlags[Tainted] = false;}
     bool isTainted()  {return instFlags[Tainted];}
+
+     void setWaitOnBrRes()
+    {
+	    instFlags[WaitOnBrRes] = true;
+    }
+
+    bool getWaitOnBrRes()
+    {
+	   return instFlags[WaitOnBrRes];
+    }
+
+    void clearWaitOnBrRes()
+    {
+	    instFlags[WaitOnBrRes] = false;
+    }
 
 
     ////////////////////////////////////////////
