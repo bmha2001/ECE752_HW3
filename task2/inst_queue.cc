@@ -604,7 +604,7 @@ InstructionQueue::insert(const DynInstPtr &new_inst)
     assert(freeEntries == (numEntries - countInsts()));
 
     //752 code
-    if (new_inst->isCondCtrl()) {
+    if (new_inst->isCondCtrl() && memDepUnit[new_inst->threadNumber].delayCtrlSpecLoad) {
 
 	memDepUnit[new_inst->threadNumber].insertBr(new_inst);
     }
@@ -993,7 +993,7 @@ InstructionQueue::wakeDependents(const DynInstPtr &completed_inst)
     ThreadID tid = completed_inst->threadNumber;
 
     //752 code
-    if (completed_inst->isCondCtrl() && !completed_inst->isSquashedInIQ()) {
+    if (completed_inst->isCondCtrl() && memDepUnit[tid].delayCtrlSpecLoad) {
 	    memDepUnit[tid].resolveBr(completed_inst);
     }
 
@@ -1209,7 +1209,8 @@ InstructionQueue::doSquash(ThreadID tid)
 
         DynInstPtr squashed_inst = (*squash_it);
 //752 code
-    if (squashed_inst->isCondCtrl()) {
+    if (squashed_inst->isCondCtrl() && memDepUnit[tid].delayCtrlSpecLoad ) {
+//    std::cout << "Branch squashed : " <<squashed_inst->seqNum <<" \n";
 	    memDepUnit[tid].removeBr(squashed_inst);
     }
 	
