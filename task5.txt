@@ -1,0 +1,14 @@
+No Defense:
+Execution Time: 0.092642
+Total Cycles: 278204303
+CPI: 1.112817
+
+delayCtrlSpecLoad set:
+Execution Time: 0.121554
+Total Cycles: 365027059
+CPI: 1.460108
+
+delayTaintedLoad set:
+Execution Time: 0.106762
+Total Cycles: 320607802
+CPI: 1.282431
